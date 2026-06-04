@@ -13,6 +13,8 @@
 - selenium
 - requests
 - _sqlalchemy_
+- allure
+- config
 
 ### Структура:
 - ./test - тесты
