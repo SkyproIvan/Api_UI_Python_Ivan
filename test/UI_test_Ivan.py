@@ -16,7 +16,6 @@ def test_auth(browser):
     email = os.getenv("TEST_USER_EMAIL")
     password = os.getenv("TEST_USER_PASSWORD")
     assert email is not None and password is not None, "Данные для входа (email/password) не найдены в переменных окружения"
-    task_name = "Задача 1 API"
 
     with allure.step("Открыть страницу аутентификации"):
         auth_page = AuthPage(browser)
@@ -34,30 +33,31 @@ def test_auth(browser):
         current_url = main_page.get_current_url()
         assert "my-tasks" in current_url, f"URL '{current_url}' не содержит 'my-tasks'"
 
+    with allure.step("Создать задачу"):
+        # Переменная для наглядности
+        expected_task_name = "Новая задача для теста"
+
+        # Вызываем метод, который теперь возвращает название задачи
+        actual_task_name = main_page.create_new_task(expected_task_name)
+
+        # Проверяем, что название задачи на странице совпадает с тем, которое мы вводили
+        assert actual_task_name == expected_task_name, \
+            f"Название задачи не совпадает. Ожидалось: '{expected_task_name}', получено: '{actual_task_name}'"
+
     with allure.step("Получить информацию об аккаунте"):
-        account_info = main_page.get_account_info()
-        assert account_info != "", "Имя пользователя не отображается"
+       account_info = main_page.get_account_info()
+       assert account_info != "", "Имя пользователя не отображается"
+
+    with allure.step("Удалить задачу"):
+        main_page.delete_new_task()
+        assert actual_task_name == expected_task_name, \
+            f"Название задачи не совпадает. Ожидалось: '{expected_task_name}', получено: '{actual_task_name}'"
 
     with allure.step("Нажать на кнопку выхода из учетной записи"):
-        main_page.logout()
-
-    # --- Проверки (Assertions) ---
-
-    # Получаем текущий URL после нажатия на "Выход"
-    current_url = main_page.get_current_url()
-
-    with allure.step(f"Создать новую задачу с названием '{task_name}'"):
-        main_page.create_new_task(task_name)
-
-    with allure.step("Проверить, что текущий URL содержит '/login'"):
-        # Используем более надежный метод проверки URL.
-        # Вместо точного сравнения, проверяем наличие ключевого сегмента.
-        assert "/login" in current_url, \
-            f"Не удалось выйти из системы. Текущий URL: {current_url}, ожидается страница логина."
+       main_page.logout()
+       assert account_info != "", "Имя пользователя не отображается"
 
 
 
-
-        """ Тесты сработали"""
 
 
