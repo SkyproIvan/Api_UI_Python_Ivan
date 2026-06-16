@@ -23,12 +23,14 @@
 - ./pages - описание страниц
 - ./api - хелперы для работы с API
 - ./db - хелперы для работы с БД
+- test_config.ini - настройка тестов
 
 ### Библиотеки (!)
 - pyp install pytest
 - pip install selenium
 - pip install webdriver-manager 
 - pip install allure-pytest
+- pip install requests
 
 ### Полезные ссылки
 - [Подсказка по markdown](https://www.markdownguide.org/basic-syntax/)

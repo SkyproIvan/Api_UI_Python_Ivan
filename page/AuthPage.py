@@ -7,7 +7,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 load_dotenv()
 class AuthPage:
-
+    """Страница авторизации"""
     def __init__(self, driver: WebDriver) -> None:
         self.url = None
         self.__url = "https://ru.yougile.com/team/settings-account"

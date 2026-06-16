@@ -55,7 +55,7 @@ def test_auth(browser):
 
     with allure.step("Нажать на кнопку выхода из учетной записи"):
        main_page.logout()
-       assert account_info != "", "Имя пользователя не отображается"
+       assert account_info != "", "Имя отображается"
 
 
 

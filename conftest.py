@@ -2,10 +2,14 @@ import pytest
 import allure
 from selenium import webdriver
 from API.BoardsApi import BoardsApi
+from Configuration.ConfigProvider import ConfigProvider
+
 """ тут всё в норме"""
 @pytest.fixture
 def browser():
+
     with allure.step("Открыть и настроить браузер"):
+        timeout = ConfigProvider().getint("ui", "timeout")
         browser = webdriver.Chrome()
         browser.implicitly_wait(5)
 
@@ -17,15 +21,17 @@ def browser():
         """Тест отработал"""
 @pytest.fixture
 def api_client() -> BoardsApi():
-    return BoardsApi("https://ru.yougile.com/api-v2","5zO0PQDcT4kSEHsPEzvwtu230DpmLM8VD7BaawTil7QEfToMhBur2Az7SCKPM8go")
+    url = ConfigProvider().get_api_url()
+    token = ConfigProvider().get_api_token()
+    return BoardsApi(url,token)
 
 @pytest.fixture
 def api_client_no_auth() -> BoardsApi():
-    return BoardsApi("https://ru.yougile.com/api-v2", "")
+    return BoardsApi(ConfigProvider().get_api_url(), "")
 
 @pytest.fixture
 def dummy_project_id() -> str:
-    api = BoardsApi("https://ru.yougile.com/api-v2", "5zO0PQDcT4kSEHsPEzvwtu230DpmLM8VD7BaawTil7QEfToMhBur2Az7SCKPM8go")
+    api = BoardsApi(ConfigProvider().get_api_url(), ConfigProvider().get_api_token())
     resp_project = api.create_project("Project to delete").get("id")
     return resp_project
 
@@ -34,8 +40,8 @@ def dummy_project_id() -> str:
 def dummy_project_role_id() -> str:
     # Инициализируем API-клиент
     api = BoardsApi(
-        "https://ru.yougile.com/api-v2",
-        "5zO0PQDcT4kSEHsPEzvwtu230DpmLM8VD7BaawTil7QEfToMhBur2Az7SCKPM8go"
+        ConfigProvider().get_api_url(),
+        ConfigProvider().get_api_token()
     )
 
     # Шаг 1: Создаем проект ОДИН РАЗ и сохраняем весь ответ

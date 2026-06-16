@@ -72,59 +72,51 @@ class MainPage:
         return name
 
     @allure.step("Удаление созданных задач")
+    @allure.step("Удаление созданных задач")
     def delete_new_task(self):
-        """"Удаляет созданную задачу.
-                """
-        cont_of_task_locator = (By.CSS_SELECTOR, "div.group\\/row.flex.flex-col.hoverable-group")
-
-        # Локатор для иконки меню (трех точек) внутри контейнера
-        button_of_task_locator = (By.CSS_SELECTOR, "div > [data-testid='board-task-menu']")
-
-        # Локатор для кнопки "Удалить" в выпадающем меню
-        button_delete_locator = (By.XPATH, "//div[contains(text(),'Удалить')]")
-        # Локатор для подтверждения
-        button_delete_ok = (By.XPATH, "//div[@class='text-left flex items-center justify-center w-full'][contains(text(),'Удалить')]")
+        """Удаляет созданную задачу."""
 
         try:
-            # 1. Находим контейнер задачи и кликаем по нему, чтобы вызвать появление меню
-            # Используем visibility_of_element_located, так как элемент должен быть виден для клика
-            cont_of_task_element = WebDriverWait(self.__driver, 10).until(
-                EC.visibility_of_element_located(cont_of_task_locator)
-            )
-            cont_of_task_element.click()  # Или можно использовать ActionChains для клика
+            # 1. Находим список всех задач.
+            tasks_list = self.__driver.find_elements(By.CSS_SELECTOR, "div.hoverable-group")
 
-            # 2. Находим иконку меню (кнопку) внутри уже найденного контейнера
-            # Это более надежно, чем искать по всему документу
-            button_of_task_element = WebDriverWait(self.__driver, 5).until(
-                EC.element_to_be_clickable(button_of_task_locator)
-            )
+            if not tasks_list:
+                raise Exception("Список задач пуст. Не удалось найти ни одной задачи.")
 
+            # 2. Берем ПЕРВУЮ задачу в списке
+            first_task_element = tasks_list[0]
 
-            # 3. Наводим курсор на найденную иконку меню
+            # --- НОВЫЙ БЛОК ДЛЯ ДИАГНОСТИКИ ---
+            # Сначала наводим курсор на задачу
             actions = ActionChains(self.__driver)
-            actions.move_to_element(button_of_task_element).perform()
+            actions.move_to_element(first_task_element).perform()
+
+            # Ищем элемент немедленно
+            button_of_task_locator = (By.CSS_SELECTOR, "[data-testid='board-task-menu']")
+            button_of_task_element = first_task_element.find_element(*button_of_task_locator)
+
+            print("Кнопка меню успешно найдена! Продолжаем тест...")
             button_of_task_element.click()
 
-            # 4. Ожидаем появления кнопки "Удалить" и кликаем по ней
-            # Иногда кнопка появляется не сразу после наведения, поэтому ждем ее
-            button_delete = WebDriverWait(self.__driver, 10).until(
-                EC.element_to_be_clickable(button_delete_locator)
+            # --- КОНЕЦ БЛОКА ДИАГНОСТИКИ ---
+
+            # Если диагностика прошла успешно, выполняем остальную логику удаления
+            button_delete_locator = (By.XPATH, ".//div[contains(text(),'Удалить')]")
+            button_delete = WebDriverWait(self.__driver, 8).until(
+                EC.visibility_of_element_located(button_delete_locator)
             )
             button_delete.click()
 
-            click_ok = WebDriverWait(self.__driver, 10).until(
+            button_delete_ok = (By.XPATH,
+                                "//div[@class='text-left flex items-center justify-center w-full'][contains(text(),'Удалить')]")
+            click_ok = WebDriverWait(self.__driver, 5).until(
                 EC.element_to_be_clickable(button_delete_ok)
             )
-            time.sleep(5)
-
             click_ok.click()
-            time.sleep(5)
 
         except Exception as e:
-            print(f"Произошла ошибка при удалении задачи: {e}")
-            # Здесь можно добавить сохранение скриншота для отладки
-            # self.__driver.save_screenshot('error_delete_task.png')
-            raise  # Пробрасываем исключение, чтобы тест упал
+            self.__driver.save_screenshot('final_fix_error.png')
+            raise e
 
     @allure.step("Главная страница")
     def open_exit(self):

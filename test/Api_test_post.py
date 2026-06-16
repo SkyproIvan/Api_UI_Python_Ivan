@@ -27,7 +27,6 @@ def test_create_project_role(api_client: BoardsApi):
         "name": name,
         "description": description
             }
-
     create_response = api_client.create_project_role(org_id=org_id, body=body)
     project_role_id = create_response.get("id")
     print(project_role_id)

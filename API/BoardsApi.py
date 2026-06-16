@@ -152,3 +152,4 @@ class BoardsApi:
         path = f"{self.base_url}/departments"
         resp = requests.post(path, json=body, headers=headers)
         return resp.json()
+    """Конец тестирования"""
