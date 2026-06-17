@@ -22,8 +22,10 @@
 - ./test - тесты
 - ./pages - описание страниц
 - ./api - хелперы для работы с API
-- ./db - хелперы для работы с БД
 - test_config.ini - настройка тестов
+- ./configuration - провайдер настроек
+- ./test_data - провайдер тестовых данных
+- test_data.json
 
 ### Библиотеки (!)
 - pyp install pytest
@@ -35,3 +37,5 @@
 ### Полезные ссылки
 - [Подсказка по markdown](https://www.markdownguide.org/basic-syntax/)
 - [Генератор файла .gitignore](https://www.toptal.com/developers/gitignore/)
+- [Про configparser](https://docs.python.org/3/library/configparser.html)
+- [Про pip freeze](https://pip.pypa.io/en/stable/cli/pip_freeze/)

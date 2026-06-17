@@ -1,6 +1,4 @@
 import requests
-from sqlalchemy import true
-
 
 class BoardsApi:
 
@@ -11,8 +9,7 @@ class BoardsApi:
         self.base_url = base_url.rstrip('/')
         self.token = token
 
-
-    def create_project(self, name, default_lists=True):
+    def create_project(self, name):
         """Создание нового проекта.
                :param name: Название проекта.
                """
@@ -25,7 +22,7 @@ class BoardsApi:
 
         return resp.json()
 
-    def create_project_role(self, body, org_id, default_lists=True):
+    def create_project_role(self, body, org_id):
         """Создание роли в проекте.
                 :param body: Словарь с данными роли (name, description).
                 :param org_id: ID организации/проекта.
@@ -142,7 +139,7 @@ class BoardsApi:
 
         return resp.json()
 
-    def create_department(self, name, default_lists=True):
+    def create_department(self, name):
         """Создание нового отдела.
                 :param name: Название отдела."""
         body = {

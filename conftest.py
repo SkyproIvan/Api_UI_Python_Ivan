@@ -1,29 +1,37 @@
 import pytest
 import allure
 from selenium import webdriver
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager
+
+
 from API.BoardsApi import BoardsApi
 from Configuration.ConfigProvider import ConfigProvider
+from Configuration.DataProvider import DataProvider
 
-""" тут всё в норме"""
+""" Основные настройки браузеров"""
 @pytest.fixture
 def browser():
-
     with allure.step("Открыть и настроить браузер"):
         timeout = ConfigProvider().getint("ui", "timeout")
-        browser = webdriver.Chrome()
-        browser.implicitly_wait(5)
+        browser_name = ConfigProvider().get("ui", "browser_name")
+        if browser_name == "chrome":
+            browser = webdriver.Chrome()
+        else:
+            service = FirefoxService(GeckoDriverManager().install())
+            browser = webdriver.Firefox(service=service)
 
+        browser.implicitly_wait(timeout)
         browser.maximize_window()
         yield browser
 
     with allure.step("Закрыть браузер"):
         browser.quit()
+
         """Тест отработал"""
 @pytest.fixture
 def api_client() -> BoardsApi():
-    url = ConfigProvider().get_api_url()
-    token = ConfigProvider().get_api_token()
-    return BoardsApi(url,token)
+    return BoardsApi(ConfigProvider().get_api_url(),DataProvider().get_token())
 
 @pytest.fixture
 def api_client_no_auth() -> BoardsApi():
@@ -31,7 +39,7 @@ def api_client_no_auth() -> BoardsApi():
 
 @pytest.fixture
 def dummy_project_id() -> str:
-    api = BoardsApi(ConfigProvider().get_api_url(), ConfigProvider().get_api_token())
+    api = BoardsApi(ConfigProvider().get_api_url(), DataProvider().get_token())
     resp_project = api.create_project("Project to delete").get("id")
     return resp_project
 
@@ -41,19 +49,15 @@ def dummy_project_role_id() -> str:
     # Инициализируем API-клиент
     api = BoardsApi(
         ConfigProvider().get_api_url(),
-        ConfigProvider().get_api_token()
+        DataProvider().get_token()
     )
 
     # Шаг 1: Создаем проект ОДИН РАЗ и сохраняем весь ответ
     project_data = api.create_project("Project for role")
-
     # Извлекаем org_id (ID проекта) из ответа
     org_id = project_data.get("id")
-
     # Извлекаем name (имя проекта) из того же самого ответа,
-    # а не создаем новый проект ради этого
     name = project_data.get("name")
-
     description = "Для удаления"
     true = True
     body = {
@@ -94,12 +98,8 @@ def dummy_project_role_id() -> str:
 @pytest.fixture
 def created_project_role(api_client):
     # ЭТАП НАСТРОЙКИ: Создаем роль
-    org_id = "5b455e28-51d3-4491-9303-64f3dcfccabb"
-    body = {
-        "name": "Иван",
-        "description": "Студент",
-        "permissions": {...}
-    }
+    org_id = DataProvider().get("org_id")
+    body = DataProvider().get("body")
 
     response = api_client.create_project_role(org_id=org_id, body=body)
     role_id = response.get("id")
@@ -119,3 +119,7 @@ def created_project_role(api_client):
         )
     except Exception as e:
         print(f"Внимание: Не удалось удалить роль. Ошибка: {e}")
+
+@pytest.fixture
+def test_data():
+    return DataProvider()

@@ -5,12 +5,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from Configuration.ConfigProvider import ConfigProvider
 load_dotenv()
 class AuthPage:
     """Страница авторизации"""
     def __init__(self, driver: WebDriver) -> None:
+        config_provider = ConfigProvider()
+        url = config_provider.get_ui_url()
         self.url = None
-        self.__url = "https://ru.yougile.com/team/settings-account"
+        self.__url = url+"/team/settings-account"
         self.__driver = driver
 
     @allure.step("Перейти на страницу авторизации")

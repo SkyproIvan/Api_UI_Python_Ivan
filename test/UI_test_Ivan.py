@@ -1,5 +1,8 @@
 import sys
 import os
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+
 """ Для привязки к папке"""
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
@@ -49,13 +52,38 @@ def test_auth(browser):
        assert account_info != "", "Имя пользователя не отображается"
 
     with allure.step("Удалить задачу"):
+        task_counter_locator = (By.CSS_SELECTOR,
+                                "div.hoverable-group")
+
+        # Используем этот локатор для получения количества
+        initial_count = len(browser.find_elements(*task_counter_locator))
+
+        # Если список пустой, нет смысла продолжать
+        assert initial_count > 0, "Нет задач для удаления"
+
+        # 2. Вызываем метод, который нажимает кнопки и ждет исчезновения элемента
         main_page.delete_new_task()
-        assert actual_task_name == expected_task_name, \
-            f"Название задачи не совпадает. Ожидалось: '{expected_task_name}', получено: '{actual_task_name}'"
+
+
+        # 3. ОЖИДАЕМ, что количество задач стало меньше
+        with allure.step("Проверить, что количество задач уменьшилось"):
+            # Используем wait.until с лямбда-функцией
+            wait = WebDriverWait(browser, 15)
+
+            wait.until(lambda driver: len(driver.find_elements(By.CSS_SELECTOR, "div.hoverable-group")) < initial_count)
+
+            final_count = len(browser.find_elements(By.CSS_SELECTOR, "div.hoverable-group"))
+
+            assert final_count == initial_count - 1, \
+                f"Удаление не сработало. Было задач: {initial_count}, стало: {final_count}"
+
+        print("Успешно проверено, что задача была удалена.")
 
     with allure.step("Нажать на кнопку выхода из учетной записи"):
-       main_page.logout()
-       assert account_info != "", "Имя отображается"
+       name_exit = main_page.logout()
+       print("Вышли из аккаунта")
+
+       assert name_exit == "", "Имя отображается"
 
 
 

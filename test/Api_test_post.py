@@ -1,7 +1,5 @@
-import requests
-
 from API.BoardsApi import BoardsApi
-import pytest
+
 
 def test_create_project(api_client: BoardsApi):
     """Тест проверяет успешное создание проекта через API.
@@ -17,12 +15,12 @@ def test_create_project(api_client: BoardsApi):
     print(project_id)
     assert project_id is not None, "В ответе на создание доски отсутствует поле 'id'"
 
-def test_create_project_role(api_client: BoardsApi):
+def test_create_project_role(api_client: BoardsApi, test_data: dict):
     """Тест проверяет успешное создание роли в проекте.
         """
-    org_id = "5b455e28-51d3-4491-9303-64f3dcfccabb"
-    name = "Иван"
-    description = "Студент"
+    org_id = test_data.get("org_id")
+    name = test_data.get("name")
+    description = test_data.get("description")
     body = {
         "name": name,
         "description": description
@@ -44,11 +42,11 @@ def test_delete_project_role(api_client: BoardsApi, dummy_project_id: str, dummy
     print(resp)
     assert resp['statusCode'] == 404, "Статус код не равен 404"
 
-def test_create_department(api_client: BoardsApi):
+def test_create_department(api_client: BoardsApi, test_data: dict):
     """
     Тест проверяет успешное создание отдела через API.
         """
-    department = "Отдел технического перевооружения"
+    department = test_data.get("department")
     #  Действие: Создаем отдел
     create_response = api_client.create_department(department)
     assert create_response is not None, "Ответ на запрос создания доски пустой"
@@ -57,10 +55,10 @@ def test_create_department(api_client: BoardsApi):
     print(department_id)
     assert department_id is not None, "В ответе на создание доски отсутствует поле 'id'"
 
-def test_create_project_no_auth(api_client_no_auth: BoardsApi):
+def test_create_project_no_auth(api_client_no_auth: BoardsApi, test_data: dict):
     """Тест проверяет, что создание проекта без авторизации возвращает ошибку 401.
         """
-    project = "Мой финальный проект"
+    project = test_data.get("project")
     create_response = api_client_no_auth.create_project(project)
     assert create_response['statusCode'] == 401, "Статус код не равен 401"
     assert create_response['message'] == "Unauthorized", "В ответе message лтсутствует информация или отличается от ожидаемой"

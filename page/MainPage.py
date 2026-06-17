@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
+
 
 
 class MainPage:
@@ -31,7 +31,7 @@ class MainPage:
         container = self.__driver.find_element(By.CSS_SELECTOR,
                                                "div[class='relative text-primary truncate isolate flex-1 min-w-0 break-words text-sm-regular ml-4'] span span")
         name = container.text
-        # Возвращаем имя и почту пользователя:
+        # Возвращаем имя:
         return name
 
     @allure.step("Создать новую задачу с названием '{task_name}'")
@@ -61,17 +61,16 @@ class MainPage:
         )
         title_input.send_keys(task_name)
 
-        # 4. Нажимаем на кнопку "Сохранить"
+        # 4. Нажимаем на кнопку "Мои задачи" для сохранения
         WebDriverWait(self.__driver, 10).until(
             EC.element_to_be_clickable(save_task_button_locator)
         ).click()
 
         container = self.__driver.find_element(By.XPATH, "//span[contains(text(),'Новая задача для теста')]")
         name = container.text
-        # Возвращаем имя и почту пользователя:
+        # Возвращаем название
         return name
 
-    @allure.step("Удаление созданных задач")
     @allure.step("Удаление созданных задач")
     def delete_new_task(self):
         """Удаляет созданную задачу."""
@@ -102,21 +101,34 @@ class MainPage:
 
             # Если диагностика прошла успешно, выполняем остальную логику удаления
             button_delete_locator = (By.XPATH, ".//div[contains(text(),'Удалить')]")
-            button_delete = WebDriverWait(self.__driver, 8).until(
+            button_delete = WebDriverWait(self.__driver, 10).until(
                 EC.visibility_of_element_located(button_delete_locator)
             )
             button_delete.click()
 
-            button_delete_ok = (By.XPATH,
-                                "//div[@class='text-left flex items-center justify-center w-full'][contains(text(),'Удалить')]")
-            click_ok = WebDriverWait(self.__driver, 5).until(
-                EC.element_to_be_clickable(button_delete_ok)
+            confirm_button_locator = (By.XPATH, '//div[@role="button"][normalize-space()="Удалить"]')
+            confirm_button = WebDriverWait(self.__driver, 15).until(
+                EC.element_to_be_clickable(confirm_button_locator)
             )
-            click_ok.click()
+            confirm_button.click()
+
+            WebDriverWait(self.__driver, 20).until(
+                EC.invisibility_of_element(first_task_element))
+
+            container_number = self.__driver.find_element(By.CSS_SELECTOR,
+                                                          ".bg-background-secondary.rounded-4.px-6.py-2.text-subtitle-xs.text-secondary")
+            number_task = container_number.text
+            return number_task
+
+            print("Задача успешно отправлена в корзину/удалена.")
+            return True  # Сигнализируем об успехе
+
+
 
         except Exception as e:
             self.__driver.save_screenshot('final_fix_error.png')
             raise e
+
 
     @allure.step("Главная страница")
     def open_exit(self):
@@ -137,5 +149,12 @@ class MainPage:
         WebDriverWait(self.__driver, 10).until(
             EC.element_to_be_clickable(logout_button_locator)
         ).click()
+
+        container_exit = self.__driver.find_element(By.CSS_SELECTOR,
+                                               "input[placeholder='example@mail.ru']")
+        name_exit = container_exit.text
+        # Возвращаем имя и почту пользователя:
+        return name_exit
+
 
 
