@@ -20,6 +20,3 @@ class ConfigProvider:
 
     def get_api_url(self):
         return self.config["api"].get("base_url")
-
-    def get_api_token(self):
-        return self.config["api"].get("token")

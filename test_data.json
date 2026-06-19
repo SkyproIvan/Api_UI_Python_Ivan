@@ -5,6 +5,7 @@
   "token": "5zO0PQDcT4kSEHsPEzvwtu230DpmLM8VD7BaawTil7QEfToMhBur2Az7SCKPM8go",
   "department": "Отдел технического перевооружения",
   "project": "Мой финальный проект",
+  "expected_task_name": "Новая задача для теста",
   "body": {
         "name": "Иван",
         "description": "Студент",

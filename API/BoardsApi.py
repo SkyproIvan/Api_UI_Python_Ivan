@@ -5,7 +5,6 @@ class BoardsApi:
     def __init__(self, base_url: str, token: str) -> None:
         """Инициализация клиента API.
         :param base_url: Базовый URL API
-        (например, 'https://api.example.com/v1')
         :param token: Токен авторизации (Bearer Token)"""
 
         self.base_url = base_url.rstrip('/')

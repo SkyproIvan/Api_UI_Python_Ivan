@@ -25,7 +25,7 @@ class AuthPage:
     def go(self):
         self.__driver.get(self.__url)
 
-    @allure.step("Авторизоваться под {email}:{password}")
+    @allure.step("Ввести {email}:{password}")
     def login_as(self, email: str, password: str, check: str = "Ok"):
         # Ожидаем появления поля ввода логина
         self.wait.until(
@@ -58,10 +58,7 @@ class AuthPage:
                 )
             )
 
-    @allure.step("Получить текущий URL")
-    def get_current_url(self):
-        return self.__driver.current_url
-
+    @allure.step("Выполнить вход с логином и паролем")
     def make_auth(self):
         email = os.getenv("TEST_USER_EMAIL")
         password = os.getenv("TEST_USER_PASSWORD")
@@ -74,6 +71,7 @@ class AuthPage:
         with allure.step("Ввести логин и пароль и выполнить вход"):
             self.login_as(email, password)
 
+    @allure.step("Попытка входа без пароля")
     def is_error(self):
         return self.wait.until(
             EC.presence_of_element_located((By.XPATH, '//div[@class="login-error"]'))

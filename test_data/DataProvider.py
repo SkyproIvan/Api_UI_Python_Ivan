@@ -46,29 +46,6 @@ class DataProvider:
         """
         return self.data.get(prop)
 
-    def getint(self, prop: str) -> Optional[int]:
-        """
-        Безопасно возвращает целочисленное значение свойства.
-
-        Args:
-            prop: Ключ в JSON-данных.
-
-        Returns:
-            Целое число или None,
-            если ключа нет или значение нельзя преобразовать.
-        """
-        val = self.data.get(prop)
-        if val is not None:
-            try:
-                return int(val)
-            except (ValueError, TypeError):
-                print(
-                    f"Предупреждение: Свойство '{prop}'"
-                    f" ('{val}') не может быть преобразовано в целое число."
-                )
-                return None
-        return None
-
     def get_token(self) -> Optional[str]:
         """Возвращает токен авторизации."""
         return self.get("token")

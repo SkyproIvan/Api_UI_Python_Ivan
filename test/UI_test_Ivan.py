@@ -16,8 +16,8 @@ load_dotenv()
 
 
 @pytest.mark.ui
-@allure.title("Добавление события через кнопку 'плюс'")
-@allure.story("Расписание преподавателя")
+@allure.title("Ui Тестирование yougile")
+@allure.story("Попытка входа без пароля")
 def test_no_password(browser_no_auth):
     """Тест про отсутствие пароля"""
 
@@ -37,16 +37,19 @@ def test_no_password(browser_no_auth):
         assert auth_page.is_error(), "Нет сообщения об ошибке"
 
 
-def test_create_task(browser):
+@pytest.mark.ui
+@allure.story("Создание задачи")
+def test_create_task(browser, test_data: dict):
     main_page = MainPage(browser)
     main_page.open_menu_for_create()
     with allure.step("Открыть меню задач"):
 
-        expected_task_name = "Новая задача для теста"
+        expected_task_name = test_data.get("expected_task_name")
 
         with allure.step("Создать задачу"):
             # Вызываем метод, который теперь возвращает название задачи
             actual_task_name = main_page.create_new_task(expected_task_name)
+            print(actual_task_name)
 
             with allure.step("Проверка создания задачи"):
 
@@ -56,6 +59,8 @@ def test_create_task(browser):
                 ), f"Название задачи не совпадает. Ожидалось: '{expected_task_name}', получено: '{actual_task_name}'"
 
 
+@pytest.mark.ui
+@allure.story("Получение информации об аккаунте")
 def test_get_task_info(browser):
     main_page = MainPage(browser)
 
@@ -66,9 +71,12 @@ def test_get_task_info(browser):
         assert account_info != "", "Имя пользователя не отображается"
 
 
+@pytest.mark.ui
+@allure.story("Удаление задачи")
 def test_delete_task(browser):
     main_page = MainPage(browser)
     main_page.open_task_menu()
+
     with allure.step("Удалить задачу"):
         task_counter_locator = (By.CSS_SELECTOR, "div.hoverable-group")
 
@@ -78,10 +86,10 @@ def test_delete_task(browser):
         # Если список пустой, нет смысла продолжать
         assert initial_count > 0, "Нет задач для удаления"
 
-        # 2. Вызываем метод, который нажимает кнопки и ждет исчезновения элемента
+        #  Вызываем метод, который нажимает кнопки и ждет исчезновения элемента
         main_page.delete_new_task()
 
-        # 3. ОЖИДАЕМ, что количество задач стало меньше
+        # ОЖИДАЕМ, что количество задач стало меньше
         with allure.step("Проверить, что количество задач уменьшилось"):
             # Используем wait.until с лямбда-функцией
             wait = WebDriverWait(browser, 15)
@@ -104,6 +112,8 @@ def test_delete_task(browser):
         print("Успешно проверено, что задача была удалена.")
 
 
+@pytest.mark.ui
+@allure.story("Выход из аккаунта")
 def test_exit(browser):
     main_page = MainPage(browser)
     with allure.step("Нажать на кнопку выхода из учетной записи"):
