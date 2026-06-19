@@ -1,11 +1,13 @@
 import requests
 
-class BoardsApi:
 
+class BoardsApi:
     def __init__(self, base_url: str, token: str) -> None:
         """Инициализация клиента API.
-               :param base_url: Базовый URL API (например, 'https://api.example.com/v1')
-               :param token: Токен авторизации (Bearer Token)"""
+        :param base_url: Базовый URL API
+        (например, 'https://api.example.com/v1')
+        :param token: Токен авторизации (Bearer Token)"""
+
         self.base_url = base_url.rstrip('/')
         self.token = token
 
@@ -31,97 +33,97 @@ class BoardsApi:
         description = body["description"]
         body = {
             "name": name,
-      "description": description,
-      "permissions": {
-        "editTitle": True,
-        "delete": True,
-        "addBoard": True,
-        "boards": {
-          "editTitle": True,
-          "delete": True,
-          "move": True,
-          "showStickers": True,
-          "editStickers": True,
-          "addColumn": True,
-          "columns": {
-        "editTitle": True,
-        "delete": True,
-        "move": "no",
-        "addTask": True,
-        "allTasks": {
-          "show": True,
-          "delete": True,
-          "editTitle": True,
-          "editDescription": True,
-          "complete": True,
-          "close": True,
-          "assignUsers": "no",
-          "connect": True,
-          "editSubtasks": "no",
-          "editStickers": True,
-          "editPins": True,
-          "move": "no",
-          "sendMessages": True,
-          "sendFiles": True,
-          "editWhoToNotify": "no"
-        },
-        "withMeTasks": {
-          "show": True,
-          "delete": True,
-          "editTitle": True,
-          "editDescription": True,
-          "complete": True,
-          "close": True,
-          "assignUsers": "no",
-          "connect": True,
-          "editSubtasks": "no",
-          "editStickers": True,
-          "editPins": True,
-          "move": "no",
-          "sendMessages": True,
-          "sendFiles": True,
-          "editWhoToNotify": "no"
-        },
-        "myTasks": {
-          "show": True,
-          "delete": True,
-          "editTitle": True,
-          "editDescription": True,
-          "complete": True,
-          "close": True,
-          "assignUsers": "no",
-          "connect": True,
-          "editSubtasks": "no",
-          "editStickers": True,
-          "editPins": True,
-          "move": "no",
-          "sendMessages": True,
-          "sendFiles": True,
-          "editWhoToNotify": "no"
-        },
-        "createdByMeTasks": {
-          "show": True,
-          "delete": True,
-          "editTitle": True,
-          "editDescription": True,
-          "complete": True,
-          "close": True,
-          "assignUsers": "no",
-          "connect": True,
-          "editSubtasks": "no",
-          "editStickers": True,
-          "editPins": True,
-          "move": "no",
-          "sendMessages": True,
-          "sendFiles": True,
-          "editWhoToNotify": "no"
-        }
-      },
-      "settings": True
-    },
-    "children": {}
-  }
-}
+            "description": description,
+            "permissions": {
+                "editTitle": True,
+                "delete": True,
+                "addBoard": True,
+                "boards": {
+                    "editTitle": True,
+                    "delete": True,
+                    "move": True,
+                    "showStickers": True,
+                    "editStickers": True,
+                    "addColumn": True,
+                    "columns": {
+                        "editTitle": True,
+                        "delete": True,
+                        "move": "no",
+                        "addTask": True,
+                        "allTasks": {
+                              "show": True,
+                              "delete": True,
+                              "editTitle": True,
+                              "editDescription": True,
+                              "complete": True,
+                              "close": True,
+                              "assignUsers": "no",
+                              "connect": True,
+                              "editSubtasks": "no",
+                              "editStickers": True,
+                              "editPins": True,
+                              "move": "no",
+                              "sendMessages": True,
+                              "sendFiles": True,
+                              "editWhoToNotify": "no"
+                            },
+                        "withMeTasks": {
+                              "show": True,
+                              "delete": True,
+                              "editTitle": True,
+                              "editDescription": True,
+                              "complete": True,
+                              "close": True,
+                              "assignUsers": "no",
+                              "connect": True,
+                              "editSubtasks": "no",
+                              "editStickers": True,
+                              "editPins": True,
+                              "move": "no",
+                              "sendMessages": True,
+                              "sendFiles": True,
+                              "editWhoToNotify": "no"
+                            },
+                        "myTasks": {
+                              "show": True,
+                              "delete": True,
+                              "editTitle": True,
+                              "editDescription": True,
+                              "complete": True,
+                              "close": True,
+                              "assignUsers": "no",
+                              "connect": True,
+                              "editSubtasks": "no",
+                              "editStickers": True,
+                              "editPins": True,
+                              "move": "no",
+                              "sendMessages": True,
+                              "sendFiles": True,
+                              "editWhoToNotify": "no"
+                            },
+                        "createdByMeTasks": {
+                              "show": True,
+                              "delete": True,
+                              "editTitle": True,
+                              "editDescription": True,
+                              "complete": True,
+                              "close": True,
+                              "assignUsers": "no",
+                              "connect": True,
+                              "editSubtasks": "no",
+                              "editStickers": True,
+                              "editPins": True,
+                              "move": "no",
+                              "sendMessages": True,
+                              "sendFiles": True,
+                              "editWhoToNotify": "no"
+                            }
+                          },
+                        "settings": True
+                        },
+                    "children": {}
+                      }
+                    }
         headers = {"Authorization": f"Bearer {self.token}"}
         path = f"{self.base_url}/projects/{org_id}/roles"
         resp = requests.post(path, json=body, headers=headers)
