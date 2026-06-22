@@ -1,4 +1,5 @@
 import requests
+import allure
 
 
 class BoardsApi:
@@ -10,6 +11,7 @@ class BoardsApi:
         self.base_url = base_url.rstrip('/')
         self.token = token
 
+    @allure.step("Метод создания проекта с вводом имени")
     def create_project(self, name):
         """Создание нового проекта.
                :param name: Название проекта.
@@ -23,6 +25,7 @@ class BoardsApi:
 
         return resp.json()
 
+    @allure.step("Метод создания роли в проекте с id организации")
     def create_project_role(self, body, org_id):
         """Создание роли в проекте.
                 :param body: Словарь с данными роли (name, description).
@@ -129,6 +132,7 @@ class BoardsApi:
 
         return resp.json()
 
+    @allure.step("Метод удаления роли из проекта")
     def delete_project_role_by_id(self, org_id: str, role_id: str):
         """Удаление роли по её ID.
                :param org_id: ID организации/проекта.
@@ -140,6 +144,7 @@ class BoardsApi:
 
         return resp.json()
 
+    @allure.step("Метод создания отдела")
     def create_department(self, name):
         """Создание нового отдела.
                 :param name: Название отдела."""

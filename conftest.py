@@ -5,7 +5,7 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
 from API.BoardsApi import BoardsApi
 from Configuration.ConfigProvider import ConfigProvider
-from Configuration.DataProvider import DataProvider
+from test_data.DataProvider import DataProvider
 from page.AuthPage import AuthPage
 
 """ Основные настройки браузеров"""
@@ -125,7 +125,6 @@ def created_project_role(api_client):
     # ЭТАП НАСТРОЙКИ: Создаем роль
     org_id = DataProvider().get("org_id")
     body = DataProvider().get("body")
-
     response = api_client.create_project_role(org_id=org_id, body=body)
     role_id = response.get("id")
 

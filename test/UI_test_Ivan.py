@@ -16,11 +16,11 @@ load_dotenv()
 
 
 @pytest.mark.ui
-@allure.title("Ui Тестирование yougile")
+@allure.title("Негативный сценарий: попытка входа с некорректным email")
 @allure.story("Попытка входа без пароля")
 def test_no_password(browser_no_auth):
-    """Тест про отсутствие пароля"""
-
+    """Проверяет, что система не позволяет
+    войти в аккаунт с некорректным email"""
     email = "Я программист"
     password = "111"
     assert (
@@ -38,8 +38,13 @@ def test_no_password(browser_no_auth):
 
 
 @pytest.mark.ui
+@allure.title("Позитивный сценарий: создание новой задачи")
 @allure.story("Создание задачи")
 def test_create_task(browser, test_data: dict):
+    """Проверяет успешное создание новой
+    задачи с заданным названием.
+    Ожидаемый результат: задача
+    появляется в списке с корректным именем."""
     main_page = MainPage(browser)
     main_page.open_menu_for_create()
     with allure.step("Открыть меню задач"):
@@ -60,8 +65,11 @@ def test_create_task(browser, test_data: dict):
 
 
 @pytest.mark.ui
+@allure.title("Проверка отображения информации об аккаунте пользователя")
 @allure.story("Получение информации об аккаунте")
 def test_get_task_info(browser):
+    """Проверяет, что имя пользователя
+    корректно отображается в интерфейсе после входа."""
     main_page = MainPage(browser)
 
     with allure.step("Получить информацию об аккаунте"):
@@ -72,8 +80,12 @@ def test_get_task_info(browser):
 
 
 @pytest.mark.ui
+@allure.title("Позитивный сценарий: удаление существующей задачи")
 @allure.story("Удаление задачи")
 def test_delete_task(browser):
+    """Проверяет успешное удаление задачи из списка.
+    Ожидаемый результат: количество задач
+    в списке уменьшается на одну."""
     main_page = MainPage(browser)
     main_page.open_task_menu()
 
@@ -113,9 +125,14 @@ def test_delete_task(browser):
 
 
 @pytest.mark.ui
+@allure.title("Позитивный сценарий: выход из учетной записи")
 @allure.story("Выход из аккаунта")
 def test_exit(browser):
+    """Проверяет успешный выход пользователя из системы.
+    Ожидаемый результат: имя пользователя
+    перестает отображаться в интерфейсе."""
     main_page = MainPage(browser)
+
     with allure.step("Нажать на кнопку выхода из учетной записи"):
         name_exit = main_page.logout()
         print("Вышли из аккаунта")
