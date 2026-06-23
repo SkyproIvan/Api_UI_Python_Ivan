@@ -193,8 +193,7 @@ class MainPage:
 
                 # Ждем появления элемента с нашим текстом
                 # Используем XPATH, который ищет span с точным или частичным совпадением текста
-                self.wait.until(
-                    EC.presence_of_element_located(
+                assert self.wait.until(EC.presence_of_element_located(
                         (By.XPATH, f"//span[contains(text(), '{task_name}')]")
                     )
                 )
