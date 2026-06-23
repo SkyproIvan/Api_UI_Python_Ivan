@@ -1,13 +1,11 @@
-import pytest
-import sys
 import os
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
+import sys
+import uuid
+import pytest
 import allure
 from dotenv import load_dotenv  # Для загрузки переменных из .env файла
 from page.AuthPage import AuthPage
 from page.MainPage import MainPage
-
 """ Для привязки к папке"""
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
@@ -18,11 +16,11 @@ load_dotenv()
 @pytest.mark.ui
 @allure.title("Негативный сценарий: попытка входа с некорректным email")
 @allure.story("Попытка входа без пароля")
-def test_no_password(browser_no_auth):
+def test_no_password(browser_no_auth, test_data: dict):
     """Проверяет, что система не позволяет
     войти в аккаунт с некорректным email"""
-    email = "Я программист"
-    password = "111"
+    email = test_data.get("invalid_email")
+    password = test_data.get("invalid_password")
     assert (
         email is not None and password is not None
     ), "Данные для входа (email/password) не найдены в переменных окружения"
@@ -40,28 +38,22 @@ def test_no_password(browser_no_auth):
 @pytest.mark.ui
 @allure.title("Позитивный сценарий: создание новой задачи")
 @allure.story("Создание задачи")
-def test_create_task(browser, test_data: dict):
-    """Проверяет успешное создание новой
-    задачи с заданным названием.
-    Ожидаемый результат: задача
-    появляется в списке с корректным именем."""
+def test_create_task(browser):
+    """Проверяет успешное создание новой задачи с уникальным именем."""
     main_page = MainPage(browser)
-    main_page.open_menu_for_create()
-    with allure.step("Открыть меню задач"):
+    task_name = f"Автотест_{uuid.uuid4().hex[:8]}"
 
-        expected_task_name = test_data.get("expected_task_name")
+    with allure.step("Открыть раздел «Мои задачи»"):
+        main_page.open_menu_for_create()
 
-        with allure.step("Создать задачу"):
-            # Вызываем метод, который теперь возвращает название задачи
-            actual_task_name = main_page.create_new_task(expected_task_name)
-            print(actual_task_name)
+    with allure.step(f"Создать задачу с именем '{task_name}'"):
+        actual_task_name = main_page.create_new_task(task_name)
 
-            with allure.step("Проверка создания задачи"):
-
-                # Проверяем, что название задачи на странице совпадает с тем, которое мы вводили
-                assert (
-                    actual_task_name == expected_task_name
-                ), f"Название задачи не совпадает. Ожидалось: '{expected_task_name}', получено: '{actual_task_name}'"
+    with allure.step("Проверить имя созданной задачи в списке"):
+        assert actual_task_name == task_name, (
+            f"Имя задачи не совпадает. "
+            f"Ожидалось: '{task_name}', получено: '{actual_task_name}'"
+        )
 
 
 @pytest.mark.ui
@@ -89,39 +81,20 @@ def test_delete_task(browser):
     main_page = MainPage(browser)
     main_page.open_task_menu()
 
-    with allure.step("Удалить задачу"):
-        task_counter_locator = (By.CSS_SELECTOR, "div.hoverable-group")
-
-        # Используем этот локатор для получения количества
-        initial_count = len(browser.find_elements(*task_counter_locator))
-
-        # Если список пустой, нет смысла продолжать
+    with allure.step("Получение списка задач"):
+        initial_count = main_page.get_task_count()
         assert initial_count > 0, "Нет задач для удаления"
 
-        #  Вызываем метод, который нажимает кнопки и ждет исчезновения элемента
+    with allure.step("Удалить задачу"):
         main_page.delete_new_task()
 
-        # ОЖИДАЕМ, что количество задач стало меньше
         with allure.step("Проверить, что количество задач уменьшилось"):
-            # Используем wait.until с лямбда-функцией
-            wait = WebDriverWait(browser, 15)
-
-            wait.until(
-                lambda driver: len(
-                    driver.find_elements(By.CSS_SELECTOR, "div.hoverable-group")
-                )
-                < initial_count
-            )
-
-            final_count = len(
-                browser.find_elements(By.CSS_SELECTOR, "div.hoverable-group")
-            )
-
+            final_count = main_page.wait_for_task_count_change(initial_count)
             assert (
                 final_count == initial_count - 1
             ), f"Удаление не сработало. Было задач: {initial_count}, стало: {final_count}"
 
-        print("Успешно проверено, что задача была удалена.")
+    print("Успешно проверено, что задача была удалена.")
 
 
 @pytest.mark.ui

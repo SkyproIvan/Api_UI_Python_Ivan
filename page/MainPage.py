@@ -1,16 +1,46 @@
 import allure
-from selenium.common import TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
 class MainPage:
+    TASK_ROW = (By.CSS_SELECTOR, "div.hoverable-group")
+    CREATE_TASK_BUTTON = (
+        By.XPATH,
+        "//span[contains(text(), 'Создать задачу')]",
+    )
+    TASK_TITLE_INPUT = (
+        By.CSS_SELECTOR,
+        "textarea[placeholder='Введите название задачи']",
+    )
+    TASK_LOCATOR = (By.CSS_SELECTOR, "div.hoverable-group")
+
     def __init__(self, driver: WebDriver) -> None:
+        self.driver = None
         self.__driver = driver
         self.wait = WebDriverWait(driver, 10)
+
+    @allure.step("Получение списка существующих задач")
+    def _get_task_rows(self) -> list:
+        rows = self.__driver.find_elements(*self.TASK_ROW)
+        return [row for row in rows if "Создать задачу" not in row.text]
+
+    @allure.step("Ожидание появления задачи в списке")
+    def _wait_task_in_list(self, task_name: str):
+        task_name_locator = (
+            By.XPATH,
+            (
+                "//div[contains(@class,'hoverable-group')]"
+                f"//span[contains(text(), '{task_name}')]"
+            ),
+        )
+        return self.wait.until(
+            EC.visibility_of_element_located(task_name_locator)
+        )
 
     @allure.step("Получить текущий URL")
     def get_current_url(self) -> str:
@@ -54,6 +84,25 @@ class MainPage:
 
         # Для <input> и <textarea> используем get_attribute('value')
         return element.get_attribute("value")
+
+    @allure.step("Получение списка задач")
+    def get_task_count(self):
+        """Возвращает текущее количество задач в списке."""
+        return len(self.__driver.find_elements(*self.TASK_LOCATOR))
+
+    @allure.step("Проверить, что количество задач уменьшилось")
+    def wait_for_task_count_change(self, initial_count, timeout=15):
+        """
+        Ждёт, пока количество задач изменится.
+        Возвращает финальное количество задач.
+        """
+        wait = WebDriverWait(self.__driver, timeout)
+        wait.until(
+            lambda driver: len(
+                driver.find_elements(*self.TASK_LOCATOR)
+            ) != initial_count
+        )
+        return self.get_task_count()
 
     @allure.step("Удаление созданных задач")
     def delete_new_task(self):
@@ -153,55 +202,23 @@ class MainPage:
             By.XPATH,
             "//div[@class='select-none text-14 leading-4 text-panel-text-primary whitespace-nowrap'][contains(text(),'Мои задачи')]",
         ).click()
+        self.wait.until(lambda driver: "my-tasks" in driver.current_url)
 
-    def create_new_task(self, task_name: str):
+    @allure.step("Создать задачу '{task_name}'")
+    def create_new_task(self, task_name: str) -> str:
         """
-        Создает новую задачу через автосохранение при клике вне поля ввода.
-        :param task_name: Название для новой задачи.
+        Создаёт задачу в разделе «Мои задачи» и проверяет её появление в списке.
         """
+        self.wait.until(
+            EC.element_to_be_clickable(self.CREATE_TASK_BUTTON)
+        ).click()
 
-        # Локаторы (предполагается, что мы уже находимся в нужном разделе)
-        create_task_button_locator = (
-            By.XPATH,
-            "//span[contains(text(), 'Создать задачу')]",
+        title_input = self.wait.until(
+            EC.visibility_of_element_located(self.TASK_TITLE_INPUT)
         )
-        task_title_input_locator = (
-            By.CSS_SELECTOR,
-            "textarea[placeholder='Введите название задачи']",
-        )
+        title_input.clear()
+        title_input.send_keys(task_name)
+        title_input.send_keys(Keys.ENTER)
 
-        # Локатор для кнопки, которая закрывает форму и сохраняет изменения
-        save_task_button_locator = (By.XPATH, "//div[contains(text(),'Мои задачи')]")
-
-        with allure.step(f"Проверить появление задачи '{task_name}' в списке"):
-            try:
-                # Нажимаем на кнопку "Создать задачу"
-                self.wait.until(
-                    EC.element_to_be_clickable(create_task_button_locator)
-                ).click()
-
-                # Вводим название задачи
-                title_input = self.wait.until(
-                    EC.presence_of_element_located(task_title_input_locator)
-                )
-                title_input.send_keys(task_name)
-
-                # Кликаем на "Мои задачи", чтобы сработало автосохранение
-                self.wait.until(
-                    EC.element_to_be_clickable(save_task_button_locator)
-                ).click()
-
-                # Ждем появления элемента с нашим текстом
-                # Используем XPATH, который ищет span с точным или частичным совпадением текста
-                assert self.wait.until(EC.presence_of_element_located(
-                        (By.XPATH, f"//span[contains(text(), '{task_name}')]")
-                    )
-                )
-
-                return task_name
-
-            except TimeoutException:
-                # Если ожидание не сработало, собираем отладочную информацию
-                assert (
-                    False
-                ), f"Тайм-аут ожидания: Задача '{task_name}' не появилась в списке после автосохранения."
+        task_element = self._wait_task_in_list(task_name)
+        return task_element.text.strip()

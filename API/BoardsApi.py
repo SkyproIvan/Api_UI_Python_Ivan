@@ -140,7 +140,7 @@ class BoardsApi:
                """
         headers = {"Authorization": f"Bearer {self.token}"}
         path = f"{self.base_url}/projects/{org_id}/roles/{role_id}"
-        resp = requests.delete(path, json=headers, headers=headers)
+        resp = requests.delete(path, headers=headers)
 
         return resp.json()
 
