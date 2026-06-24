@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from Configuration.ConfigProvider import ConfigProvider
+from Configuration.config_provider import ConfigProvider
 
 load_dotenv()
 

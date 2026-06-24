@@ -5,9 +5,10 @@
 ### Шаги
 1. Склонировать проект 'git clone https://github.com/SkyproIvan/Api_UI_Python_Ivan.git
 2. Установить зависимости 'pip3 install > -r requirements.txt'
-3. Запустить тесты только для API: 'pytest -m api', только для UI: 'pytest -m ui', ВСЕ тесты: 'pytest'           
-4. Сгенерировать отчет 'pytest --alluredir=allure-results'
-5. Открыть отчет 'allure serve allure-results'
+3. Прописать пользовательские данные в test.data.json и .env
+4. Запустить тесты только для API: 'pytest -m api', только для UI: 'pytest -m ui', ВСЕ тесты: 'pytest'           
+5. Сгенерировать отчет 'pytest --alluredir=allure-results'
+6. Открыть отчет 'allure serve allure-results'
 
 ### Стек:
 - pytest
@@ -27,6 +28,7 @@
 - ./configuration - провайдер настроек
 - ./test_data - провайдер тестовых данных
 - test_data.json
+- файл .env.example заполнить пользовательскими данными, убрать слово example
 
 
 ### Полезные ссылки

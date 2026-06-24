@@ -462,7 +462,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+My_history.py
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -566,7 +566,6 @@ pyrightconfig.json
 *testsdir
 *testsfile
 *testsfiles
-*test
 *testdir
 *testfile
 *testfiles
@@ -595,6 +594,7 @@ pyrightconfig.json
 # Local History for Visual Studio Code
 .history/
 
+allure-results/
 # Built Visual Studio Code Extensions
 *.vsix
 
@@ -602,7 +602,12 @@ pyrightconfig.json
 # Ignore all local history of files
 .history
 .ionide
-
+-r
+.idea/
+debug_create_task.png
+debug_task_name.png
+final_fix_error.png
+pyproject.toml
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db

@@ -51,7 +51,6 @@ class MainPage:
         self.__driver.find_element(
             By.CSS_SELECTOR, ".truncate.ml-6.text-14.leading-4"
         ).click()
-        # Проверяем, что после запуска теста URL заканчивается заданной подстрокой:
         with allure.step("Проверить текущий URL страницы"):
             current_url = self.get_current_url()
             assert (
@@ -79,10 +78,8 @@ class MainPage:
             "input[placeholder='Отображаемое имя…']",
         )
 
-        # Ожидаем, пока элемент станет видимым и готовым к взаимодействию.
         element = self.wait.until(EC.visibility_of_element_located(input_field_locator))
 
-        # Для <input> и <textarea> используем get_attribute('value')
         return element.get_attribute("value")
 
     @allure.step("Получение списка задач")
@@ -109,7 +106,6 @@ class MainPage:
         """Удаляет созданную задачу."""
 
         try:
-            # Находим список всех задач.
             tasks_list = self.__driver.find_elements(
                 By.CSS_SELECTOR, "div.hoverable-group"
             )
@@ -117,14 +113,11 @@ class MainPage:
             if not tasks_list:
                 raise Exception("Список задач пуст. Не удалось найти ни одной задачи.")
 
-            # Берем ПЕРВУЮ задачу в списке
             first_task_element = tasks_list[0]
 
-            # Сначала наводим курсор на задачу
             actions = ActionChains(self.__driver)
             actions.move_to_element(first_task_element).perform()
 
-            # Ищем элемент немедленно
             button_of_task_locator = (
                 By.CSS_SELECTOR,
                 "[data-testid='board-task-menu']",
@@ -137,16 +130,12 @@ class MainPage:
             print("Кнопка меню успешно найдена! Продолжаем тест...")
             button_of_task_element.click()
 
-            # Если диагностика прошла успешно, выполняем удаление
-            # Находим в меню команду удалить
             button_delete_locator = (By.XPATH, ".//div[contains(text(),'Удалить')]")
             button_delete = self.wait.until(
                 EC.visibility_of_element_located(button_delete_locator)
             )
-            # нажать удалить
             button_delete.click()
 
-            # Подтверждение удаления во всплывающем окне
             confirm_button_locator = (
                 By.XPATH,
                 '//div[@role="button"][normalize-space()="Удалить"]',
@@ -162,7 +151,6 @@ class MainPage:
                 By.CSS_SELECTOR,
                 ".bg-background-secondary.rounded-4.px-6.py-2.text-subtitle-xs.text-secondary",
             )
-            # забираем количество оставшихся задач
             number_task = container_number.text
             return number_task
 
@@ -180,20 +168,16 @@ class MainPage:
         """
         Выполняет выход из учетной записи пользователя.
         """
-        # Открываем меню пользователя (где находится кнопка выхода)
         self.open_exit()
 
-        # Локатор для кнопки "Выйти"
         logout_button_locator = (By.CSS_SELECTOR, "div[class='cursor-pointer']")
 
-        # Находим и нажимаем кнопку выхода
         self.wait.until(EC.element_to_be_clickable(logout_button_locator)).click()
 
         container_exit = self.__driver.find_element(
             By.CSS_SELECTOR, "input[placeholder='example@mail.ru']"
         )
         name_exit = container_exit.text
-        # Возвращаем имя и почту пользователя:
         return name_exit
 
     @allure.step("Мои задачи")

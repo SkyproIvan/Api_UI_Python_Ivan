@@ -1,4 +1,4 @@
-from API.BoardsApi import BoardsApi
+from API.boards_api import BoardsApi
 import pytest
 import allure
 
@@ -11,12 +11,10 @@ def test_create_project(api_client: BoardsApi, test_data: dict):
     project = test_data.get("project")
     with allure.step("Создание проекта с наименованием 'project'"):
         create_response = api_client.create_project(project)
-        # Проверка: ответ на создание доски содержит данные
         with allure.step("Проверка id созданного проекта"):
             assert create_response is not None, "Ответ на запрос создания доски пустой"
             # Из полученного json вытягиваем id
             project_id = create_response.get("id")
-            print(project_id)
             assert (
                 project_id is not None
             ), "В ответе на создание доски отсутствует поле 'id'"
@@ -32,7 +30,6 @@ def test_create_project_role(api_client: BoardsApi, test_data: dict):
     with allure.step("Создание роли в проекте с 'org_id'"):
         create_response = api_client.create_project_role(org_id=org_id, body=body)
         project_role_id = create_response.get("id")
-        print(project_role_id)
         with allure.step("Удаляем только что созданную роль для чистоты пространства"):
             api_client.delete_project_role_by_id(org_id=org_id, role_id=project_role_id)
             assert (
@@ -52,7 +49,6 @@ def test_delete_project_role(
         resp = api_client.delete_project_role_by_id(
             dummy_project_id, dummy_project_role_id
         )
-        print(resp)
         with allure.step("Проверка статус кода удаленной роли (404)"):
             assert resp["statusCode"] == 404, "Статус код не равен 404"
 
@@ -72,7 +68,6 @@ def test_create_department(api_client: BoardsApi, test_data: dict):
         with allure.step("Проверка id вновь созданного отдела"):
 
             department_id = create_response.get("id")
-            print(department_id)
             assert (
                 department_id is not None
             ), "В ответе на создание отдела отсутствует поле 'id'"

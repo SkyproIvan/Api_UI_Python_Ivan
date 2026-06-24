@@ -3,10 +3,10 @@ import allure
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
-from API.BoardsApi import BoardsApi
-from Configuration.ConfigProvider import ConfigProvider
-from test_data.DataProvider import DataProvider
-from page.AuthPage import AuthPage
+from API.boards_api import BoardsApi
+from Configuration.config_provider import ConfigProvider
+from test_data.data_provider import DataProvider
+from page.auth_page import AuthPage
 
 """ Основные настройки браузеров"""
 
@@ -137,7 +137,6 @@ def created_project_role(api_client):
     yield {"org_id": org_id, "role_id": role_id}
 
     # ЭТАП ОЧИСТКИ: Удаляем роль после завершения теста
-    print(f"\nОчистка: Удаление роли с ID {role_id}")
     try:
         api_client.delete_project_role_by_id(org_id=org_id, role_id=role_id)
     except Exception as e:

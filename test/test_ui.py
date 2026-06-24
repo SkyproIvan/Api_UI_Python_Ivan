@@ -3,13 +3,13 @@ import sys
 import uuid
 import pytest
 import allure
-from dotenv import load_dotenv  # Для загрузки переменных из .env файла
-from page.AuthPage import AuthPage
-from page.MainPage import MainPage
-""" Для привязки к папке"""
+from dotenv import load_dotenv
+from page.auth_page import AuthPage
+from page.main_page import MainPage
+
+
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
-# Загрузка переменных окружения из файла .env
 load_dotenv()
 
 
@@ -67,7 +67,6 @@ def test_get_task_info(browser):
     with allure.step("Получить информацию об аккаунте"):
         main_page.open_menu()
         account_info = main_page.get_account_info()
-        print(account_info)  # Выведет: Ivan K
         assert account_info != "", "Имя пользователя не отображается"
 
 
@@ -94,8 +93,6 @@ def test_delete_task(browser):
                 final_count == initial_count - 1
             ), f"Удаление не сработало. Было задач: {initial_count}, стало: {final_count}"
 
-    print("Успешно проверено, что задача была удалена.")
-
 
 @pytest.mark.ui
 @allure.title("Позитивный сценарий: выход из учетной записи")
@@ -108,5 +105,4 @@ def test_exit(browser):
 
     with allure.step("Нажать на кнопку выхода из учетной записи"):
         name_exit = main_page.logout()
-        print("Вышли из аккаунта")
         assert name_exit == "", "Имя отображается"
